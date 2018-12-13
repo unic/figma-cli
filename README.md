@@ -1,6 +1,10 @@
 # Figma CLI
 A CLI to export and scaffold from Figma directly into style guides like Estatico
 
+## Install
+
+`npm install -g figma-cli`
+
 ## How-To
 
 1. Install the Figma CLI
