@@ -5,10 +5,11 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const axios = require('axios');
 const _ = require('lodash');
+const fs = require('fs');
 
 let config = {
-    figmaToken: '5856-2d950e88-dbf9-4de8-a3a8-cfd72e779e52',
-    teamID: '649509328846827012',
+    figmaToken: false,
+    teamID: false,
     projectID: false,
     output: 'json'
 };
@@ -33,6 +34,22 @@ console.log('');
 console.log('  Welcome to the ' + chalk.bold.hex('#f0441c')('F') + chalk.bold.hex('#ff6658')('I') + chalk.bold.hex('#974fff')('G') + chalk.bold.hex('#17b4fe')('M') + chalk.bold.hex('#0ec878')('A') + ' CLI');
 console.log('');
 console.log('');
+
+if (!config.figmaToken) {
+    console.log('  ' + chalk.bold.hex('#f0441c')('No Figma token found!'));
+    console.log('  Try: $ figma --token your-figma-token');
+    console.log('');
+}
+
+if (!config.teamID) {
+    console.log('  ' + chalk.bold.hex('#f0441c')('No team id found!'));
+    console.log('  Try: $ figma --team your-team-id');
+    console.log('');
+}
+
+if (!config.figmaToken || !config.teamID) {
+    process.exit(-1);
+}
 
 // Ask for the project if no project id is given:
 
@@ -141,6 +158,8 @@ function getFileStyles(fileKey) {
                     }
                 }
             }
+
+            fs.writeFile('testfile.json', JSON.stringify(response.data), 'utf8');
         })
         .catch(function (error) {
             console.log(error);
