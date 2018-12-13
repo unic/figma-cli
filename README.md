@@ -7,6 +7,10 @@ A CLI to export and scaffold from Figma directly into style guides like Estatico
 2. Add a `.figma` file to the root of your project with at least a Figma token and a project id
 3. Run `$ figma` from the root of your project
 
+Or alternatively without a `.figma` file:
+
+`$ figma --team <your-team-id> --token <your-figma-token>`
+
 ## ToDos
 
 - [ ] Colors -> Variables
