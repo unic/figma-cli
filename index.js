@@ -79,8 +79,6 @@ if (!config.projectID) {
 // Get all documents of this project:
 
 function getColorFileKey(projectID, figmaToken) {
-    let documents = [];
-
     axios.get(`https://api.figma.com/v1/projects/${config.projectID}/files`, {
         headers: {
             'X-Figma-Token': config.figmaToken
@@ -107,8 +105,42 @@ function getColorFileKey(projectID, figmaToken) {
                 if (fileKey) {
                     config.colorsFileKey = fileKey;
                     
+                    getFileStyles(fileKey);
                 }
             });
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
+
+// Get all styles in a file:
+
+function getFileStyles(fileKey) {
+
+    console.log('');
+    console.log('  Reading file ...');
+    console.log('');
+
+    axios.get(`https://api.figma.com/v1/files/${fileKey}`, {
+        headers: {
+            'X-Figma-Token': config.figmaToken
+        }
+    })
+        .then(function (response) {
+            let styles = response.data.styles;
+
+            console.log('  Colors:');
+
+            for (let key in response.data.styles) {
+                if (response.data.styles.hasOwnProperty(key)) {
+                    let style = response.data.styles[key];
+
+                    if (style.styleType === 'FILL') {
+                        console.log('    - ' + style.name);
+                    }
+                }
+            }
         })
         .catch(function (error) {
             console.log(error);
