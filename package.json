@@ -1,0 +1,35 @@
+{
+  "name": "figma-cli",
+  "version": "1.0.0",
+  "description": "A CLI to export and scaffold from Figma directly into style guides like Estatico",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unic/figma-cli.git"
+  },
+  "keywords": [
+    "figma",
+    "cli",
+    "estatico",
+    "style",
+    "guide",
+    "scaffolding"
+  ],
+  "author": "Fredi Bach, Unic AG",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/unic/figma-cli/issues"
+  },
+  "homepage": "https://github.com/unic/figma-cli#readme",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "chalk": "^2.4.1",
+    "commander": "^2.19.0",
+    "inquirer": "^6.2.1",
+    "inquirer-select-line": "^1.1.1",
+    "lodash": "^4.17.11"
+  }
+}
