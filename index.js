@@ -145,18 +145,44 @@ function getFileStyles(fileKey) {
         }
     })
         .then(function (response) {
-            let styles = response.data.styles;
+            let styles = response.data.styles,
+                colors = {};
 
             console.log('  Colors:');
+            console.log('');
 
             for (let key in response.data.styles) {
                 if (response.data.styles.hasOwnProperty(key)) {
                     let style = response.data.styles[key];
 
-                    if (style.styleType === 'FILL') {
-                        console.log('    - ' + style.name);
+                    for (let canvas of response.data.document.children) {
+                        if (Array.isArray(canvas.children)) {
+                            for (let frame of canvas.children) {
+                                if (Array.isArray(frame.children)) {
+                                    for (let item of frame.children) {
+                                        if (typeof item.styles !== 'undefined' && typeof item.styles.fill !== 'undefined' && item.styles.fill === key) {
+                                            if (typeof colors[key] === 'undefined') {
+                                                colors[key] = {
+                                                    name: style.name,
+                                                    r: item.fills[0].color.r,
+                                                    g: item.fills[0].color.g,
+                                                    b: item.fills[0].color.b,
+                                                    a: item.fills[0].color.a
+                                                };
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
+            }
+
+            for (const key of Object.keys(colors)) {
+                let color = colors[key];
+
+                console.log(`    - ${color.name}: rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`);
             }
 
             fs.writeFile('testfile.json', JSON.stringify(response.data), 'utf8');
