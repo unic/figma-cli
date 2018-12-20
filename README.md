@@ -1,6 +1,8 @@
 # Figma CLI
 A CLI to export and scaffold from Figma directly into style guides like Estatico
 
+WIP! (the version number is a lie)
+
 ## Install
 
 `npm install -g figma-cli`
@@ -17,8 +19,8 @@ Or alternatively without a `.figma` file:
 
 ## ToDos
 
-- [ ] Colors -> Variables
-- [ ] Fonts -> Mixins
+- [x] Colors -> Variables
+- [x] Fonts -> Mixins
 - [ ] Icons -> SVG (Sprite & individual files, optimized!)
 - [ ] Atoms -> Modules / React or Vue Components
 - [ ] Molecules -> Modules
