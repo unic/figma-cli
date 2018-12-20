@@ -11,7 +11,8 @@ let config = {
     figmaToken: false,
     teamID: false,
     projectID: false,
-    output: 'json'
+    output: 'json',
+    files: []
 };
 
 program
@@ -104,6 +105,8 @@ function getColorFileKey(projectID, figmaToken) {
         .then(function (response) {
             let files = _.map(response.data.files, 'name');
 
+            config.files = response.data.files;
+
             inquirer.prompt([{
                 type: 'list',
                 message: 'Which document contains color definitions?',
@@ -122,7 +125,7 @@ function getColorFileKey(projectID, figmaToken) {
                 if (fileKey) {
                     config.colorsFileKey = fileKey;
                     
-                    getFileStyles(fileKey);
+                    getColorFileStyles(fileKey);
                 }
             });
         })
@@ -131,9 +134,9 @@ function getColorFileKey(projectID, figmaToken) {
         });
 }
 
-// Get all styles in a file:
+// Get all color styles in a file:
 
-function getFileStyles(fileKey) {
+function getColorFileStyles(fileKey) {
 
     console.log('');
     console.log('  Reading file ...');
@@ -186,10 +189,96 @@ function getFileStyles(fileKey) {
                 console.log('      ' + chalk.bold.rgb(color.r * 255, color.g * 255, color.b * 255)('████'));
             }
 
-            fs.writeFile('testfile.json', JSON.stringify(response.data), 'utf8');
+            getFontFileKey();
         })
         .catch(function (error) {
             console.log(error);
         });
 }
 
+function getFontFileKey() {
+    let files = _.map(config.files, 'name');
+
+    inquirer.prompt([{
+        type: 'list',
+        message: 'Which document contains font definitions?',
+        name: 'file',
+        choices: files,
+    }]).then(function (answers) {
+        let fileName = answers.file,
+            fileKey;
+
+        for (let file of config.files) {
+            if (file.name === fileName) {
+                fileKey = file.key;
+            }
+        }
+
+        if (fileKey) {
+            config.fontsFileKey = fileKey;
+
+            getFontFileStyles(fileKey);
+        }
+    });
+
+}
+
+// Get all font styles in a file:
+
+function getFontFileStyles(fileKey) {
+
+    console.log('');
+    console.log('  Reading file ...');
+    console.log('');
+
+    axios.get(`https://api.figma.com/v1/files/${fileKey}`, {
+        headers: {
+            'X-Figma-Token': config.figmaToken
+        }
+    })
+        .then(function (response) {
+            let styles = response.data.styles,
+                fonts = {};
+
+            //fs.writeFile('fontfile.json', JSON.stringify(response.data), 'utf8');
+
+            console.log('  Fonts:');
+            console.log('');
+
+            for (let key in response.data.styles) {
+                if (response.data.styles.hasOwnProperty(key)) {
+                    let style = response.data.styles[key];
+
+                    if (style.styleType === 'TEXT') {
+                        for (let canvas of response.data.document.children) {
+                            if (Array.isArray(canvas.children)) {
+                                for (let frame of canvas.children) {
+                                    if (Array.isArray(frame.children)) {
+                                        for (let item of frame.children) {
+                                            if (item.type === 'TEXT' && typeof item.styles !== 'undefined' && typeof item.styles.text !== 'undefined' && item.styles.text === key) {
+                                                if (typeof fonts[key] === 'undefined') {
+                                                    fonts[key] = item.style;
+                                                    fonts[key].name = style.name;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            for (const key of Object.keys(fonts)) {
+                let font = fonts[key];
+
+                console.log(`    - ${font.name}`);
+                console.log(`    - family: ${font.fontFamily} | weight: ${font.fontWeight} | size: ${font.fontSize}px | align: ${font.textAlignHorizontal} | letter-spacing: ${font.fontWeight} | line-height: ${font.lineHeightPx}px`);
+            }
+
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+}
