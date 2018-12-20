@@ -183,6 +183,7 @@ function getFileStyles(fileKey) {
                 let color = colors[key];
 
                 console.log(`    - ${color.name}: rgba(${color.r}, ${color.g}, ${color.b}, ${color.a})`);
+                console.log('      ' + chalk.bold.rgb(color.r * 255, color.g * 255, color.b * 255)('████'));
             }
 
             fs.writeFile('testfile.json', JSON.stringify(response.data), 'utf8');
